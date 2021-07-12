@@ -37,6 +37,7 @@ defmodule HackerNews.APITest do
   """
 
   describe "top_stories/1" do
+    # TODO test error cases
     test "get top_stories limited by max_amount", %{bypass: bypass, hacker_news: hacker_news} do
       Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 200, @top_stories_response) end)
 
@@ -47,6 +48,7 @@ defmodule HackerNews.APITest do
   end
 
   describe "get_item/2" do
+    # TODO test error cases
     test "get_item retrieves item correctly", %{bypass: bypass, hacker_news: hacker_news} do
       Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 200, @get_item_response) end)
       item_id = 27_795_627

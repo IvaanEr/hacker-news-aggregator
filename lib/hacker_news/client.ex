@@ -16,7 +16,7 @@ defmodule HackerNews.Client do
          |> Enum.take(config.max_amount)}
 
       error ->
-        handle_error(error)
+        handle_error(error, :top_stories)
     end
   end
 
@@ -29,17 +29,17 @@ defmodule HackerNews.Client do
         {:ok, Jason.decode!(response)}
 
       error ->
-        handle_error(error)
+        handle_error(error, :get_item)
     end
   end
 
-  defp handle_error(error) do
+  defp handle_error(error, action) do
     case error do
       {:ok, %HTTPoison.Response{status_code: status_code, body: response}} ->
-        {:error, :top_stories, status_code, response}
+        {:error, action, status_code, response}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, :top_stories, reason}
+        {:error, action, reason}
     end
   end
 end
