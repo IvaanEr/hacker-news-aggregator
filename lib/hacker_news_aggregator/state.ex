@@ -2,24 +2,24 @@ defmodule HackerNewsAggregator.State do
   @moduledoc """
 
   """
-  use GenServer
+  use GenServer, start: {__MODULE__, :start_link, []}
 
   alias HackerNewsAggregator.TopStories
   alias HackerNews.API
 
   require Logger
 
-  def start_link(_default) do
+  def start_link(name \\ __MODULE__) do
     Logger.info("#{__MODULE__} started")
-    GenServer.start_link(__MODULE__, %TopStories{})
+    GenServer.start_link(__MODULE__, %TopStories{}, name: name)
   end
 
-  def get_top_stories() do
-    GenServer.call(__MODULE__, :get_top_stories)
+  def get_top_stories(pid \\ __MODULE__) do
+    GenServer.call(pid, :get_top_stories)
   end
 
-  def get_top_story(id) do
-    GenServer.call(__MODULE__, {:get_top_story, id})
+  def get_top_story(pid \\ __MODULE__, id) do
+    GenServer.call(pid, {:get_top_story, id})
   end
 
   @impl true
