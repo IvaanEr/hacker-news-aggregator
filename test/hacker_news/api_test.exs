@@ -2,67 +2,27 @@ defmodule HackerNews.APITest do
   use ExUnit.Case
 
   setup do
-    bypass = Bypass.open(port: 50_123)
     hacker_news = HackerNews.API.new()
 
-    {:ok, bypass: bypass, hacker_news: hacker_news}
+    {:ok, hacker_news: hacker_news}
   end
-
-  @top_stories_response """
-    [ 27792738, 27792930, 27794188, 27794237, 27792951, 27792736, 27795029, 27782512, 27795061, 27794794, 27794620, 27782738,
-    27782296, 27793398, 27792695, 27793969, 27792282, 27794231, 27793137, 27792773, 27770245, 27793013, 27770131, 27780899, 27794248,
-    27792908, 27792816, 27781784, 27782748, 27794236, 27793696, 27793470, 27794355, 27791539, 27791817, 27795161, 27789697, 27782086,
-    27795048, 27793303, 27794464, 27792905, 27795014, 27795186, 27791447, 27794940, 27792882, 27780777, 27792391, 27794127, 27792683,
-    2779285, 27770705, 27795055, 27780527, 27787604, 27788238, 27781146, 27783939, 27783490, 27790723, 27783793, 27792829, 27789910,
-    27778689, 27793418, 27782829, 27792328, 27794674, 27781545, 27769440, 27789101, 27781243, 27779746, 27787314, 27781293, 27794516,
-    27789917, 27793385, 27794865, 27780582, 27791511, 27784102, 27789279, 27785323, 27788723, 27774584, 27793092, 27782475, 27771091,
-    27787426, 27769291, 27789268, 27783961, 27777594, 27780838, 27784110, 27765934, 27782604, 27781377, 27770159, 27783858, 27772907,
-    27764614, 27768211, 27782370, 27781483, 27780596, 27770968, 27768795, 27776154, 27784115, 27788380, 27788212, 27763834, 27777894,
-    27791789, 27793513, 27771020, 27789750, 27769718, 27776830, 27790901, 27783865, 27773601, 27792621, 27767494, 27783094, 27785255,
-    27772440, 27768933, 27763598, 27769255, 27791227, 27775927, 27792813, 27779907, 27768884, 27773732, 27786787, 27768169, 27775384,
-    27777882, 27771219, 27782539, 27793358, 27788712, 27768861, 27793076, 27777077, 27784259, 27789952, 27782849, 27776829, 27786009,
-    27783755, 27792958, 27782337, 27782864, 27766655, 27774218, 27768792, 27778774, 27769179, 27782377, 27775089, 27782446, 27792355,
-    27772340, 27790001, 27767656, 27776314, 27779453, 27788234, 27782300, 27774987, 27792682, 27781701, 27764115, 27787621, 27782104,
-    27768826, 27777891, 27778258, 27787589, 27782383, 27786519, 27762986, 27790691, 27776184, 27784843, 27783393, 27781895, 27767032,
-    27763873, 27773747, 27762776, 27782456, 27787939, 27772650, 27769978, 27763031, 27789969, 27786381, 27784201, 27762653, 27768771,
-    27767237, 27782228, 27787796, 27762970, 27769403, 27782853, 27763763, 27792806, 27764806, 27791168, 27782791, 27771846, 27787711,
-    27768934, 27767994, 27787636, 27765686, 27769406, 27784964, 27782369, 27768914, 27776771, 27777717, 27768778, 27780399, 27789037,
-    27769285, 27785964, 27790653, 27782307, 27791478, 27790946, 27780510, 27770750, 27784421, 27763965, 27790840, 27789995, 27772183 ]
-  """
-
-  @get_item_response """
-  {\n  \"by\" : \"baybal2\",\n  \"descendants\" : 5,\n  \"id\" : 27795627,\n  \"kids\" : [ 27795820, 27795848, 27795817, 27795835, 27795784 ],\n
-  \"score\" : 30,\n  \"time\" : 1625943658,\n  \"title\" : \"American builders’ productivity has plunged by half since the late 1960s\",\n
-  \"type\" : \"story\",\n  \"url\" : \"https://www.economist.com/business/2017/08/17/efficiency-eludes-the-construction-industry\"\n}\n
-  """
 
   describe "top_stories/1" do
     # TODO test error cases
-    test "get top_stories limited by max_amount", %{bypass: bypass, hacker_news: hacker_news} do
-      Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 200, @top_stories_response) end)
-
+    test "get top_stories limited by max_amount", %{hacker_news: hacker_news} do
       {:ok, response} = HackerNews.API.top_stories(hacker_news)
 
-      assert length(response) == hacker_news.max_amount
+      assert length(response) == 3
     end
   end
 
   describe "get_item/2" do
     # TODO test error cases
-    test "get_item retrieves item correctly", %{bypass: bypass, hacker_news: hacker_news} do
-      Bypass.expect(bypass, fn conn -> Plug.Conn.resp(conn, 200, @get_item_response) end)
+    test "get_item retrieves item correctly", %{hacker_news: hacker_news} do
       item_id = 27_795_627
       {:ok, response} = HackerNews.API.get_item(hacker_news, item_id)
 
       assert response["id"] == item_id
-      assert Map.has_key?(response, "by")
-      assert Map.has_key?(response, "descendants")
-      assert Map.has_key?(response, "kids")
-      assert Map.has_key?(response, "score")
-      assert Map.has_key?(response, "time")
-      assert Map.has_key?(response, "title")
-      assert Map.has_key?(response, "type")
-      assert Map.has_key?(response, "url")
     end
   end
 end

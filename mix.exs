@@ -7,6 +7,7 @@ defmodule HackerNewsAggregator.MixProject do
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps()
     ]
   end
@@ -23,8 +24,10 @@ defmodule HackerNewsAggregator.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.8"},
-      {:jason, "~> 1.2"},
-      {:bypass, "~> 2.1", only: [:test]}
+      {:jason, "~> 1.2"}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["test/support", "lib"]
+  defp elixirc_paths(_), do: ["lib"]
 end
