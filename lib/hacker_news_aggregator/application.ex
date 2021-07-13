@@ -7,7 +7,10 @@ defmodule HackerNewsAggregator.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
-    children = [HackerNewsAggregator.State]
+    children = [
+      {Plug.Cowboy, scheme: :http, plug: HackerNewsAggregatorWeb.Router, options: [port: 4001]},
+      HackerNewsAggregator.State
+    ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
