@@ -11,6 +11,7 @@ defmodule HackerNewsAggregator.State do
 
   alias HackerNewsAggregator.TopStories
   alias HackerNews.API
+  alias HackerNewsAggregatorWeb.SocketHandler
 
   require Logger
 
@@ -63,6 +64,7 @@ defmodule HackerNewsAggregator.State do
     {:ok, top_stories_ids} = API.top_stories(API.new())
 
     Process.send_after(self(), :fetch_top_stories, :timer.minutes(5))
+    # TODO: Improve this to avoid race conditions
     Process.send_after(self(), :fetch_items, 100)
     {:noreply, Map.put(top_stories, :top_stories_ids, top_stories_ids)}
   end
@@ -70,7 +72,33 @@ defmodule HackerNewsAggregator.State do
   @impl true
   def handle_info(:fetch_items, %TopStories{top_stories_ids: ids} = top_stories) do
     items = Enum.map(ids, &fetch_item/1)
+    send(self(), :do_web_socket)
     {:noreply, Map.put(top_stories, :top_stories, items)}
+  end
+
+  @impl true
+  @doc """
+  Send the updated top stories to every web socket connection in the Registry.HackerNewsAggregator
+  under the key from config
+  """
+  def handle_info(:do_web_socket, %TopStories{top_stories: top_stories} = state) do
+    case Registry.lookup(Registry.HackerNewsAggregator, SocketHandler.get_registry_key()) do
+      [] ->
+        :ok
+
+      _ ->
+        Registry.dispatch(
+          Registry.HackerNewsAggregator,
+          :hacker_news_ws,
+          &Enum.each(&1, fn {pid, _} ->
+            send(pid, {:top_stories, top_stories})
+          end)
+        )
+
+        :ok
+    end
+
+    {:noreply, state}
   end
 
   defp fetch_item(id) do
