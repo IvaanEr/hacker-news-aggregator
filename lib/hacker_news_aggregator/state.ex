@@ -63,7 +63,7 @@ defmodule HackerNewsAggregator.State do
     Logger.info("Fetching top stories")
     {:ok, top_stories_ids} = API.top_stories(API.new())
 
-    Process.send_after(self(), :fetch_top_stories, :timer.minutes(5))
+    Process.send_after(self(), :fetch_top_stories, get_countdown())
     # TODO: Improve this to avoid race conditions
     Process.send_after(self(), :fetch_items, 100)
     {:noreply, Map.put(top_stories, :top_stories_ids, top_stories_ids)}
@@ -104,5 +104,11 @@ defmodule HackerNewsAggregator.State do
   defp fetch_item(id) do
     {:ok, item} = API.get_item(API.new(), id)
     item
+  end
+
+  def get_countdown do
+    :hacker_news_aggregator
+    |> Application.get_env(__MODULE__)
+    |> Keyword.get(:count_down, :timer.minutes(5))
   end
 end
