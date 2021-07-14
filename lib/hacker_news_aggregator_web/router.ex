@@ -4,13 +4,6 @@ defmodule HackerNewsAggregatorWeb.Router do
   alias HackerNewsAggregatorWeb.Controller
 
   plug(:match)
-
-  plug(Plug.Parsers,
-    parsers: [:json],
-    pass: ["application/json"],
-    json_decoder: Jason
-  )
-
   plug(:dispatch)
 
   get "/top_stories" do

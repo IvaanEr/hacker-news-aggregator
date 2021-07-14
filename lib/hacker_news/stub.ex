@@ -5,6 +5,8 @@ defmodule HackerNews.Stub do
 
   @behaviour HackerNews.API
 
+  # TODO The Stub should be something more complete and test every field
+  # in the story
   @impl true
   def top_stories(_config) do
     {:ok, [1234, 5678, 9012]}
