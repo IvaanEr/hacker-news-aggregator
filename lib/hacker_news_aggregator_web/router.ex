@@ -3,6 +3,7 @@ defmodule HackerNewsAggregatorWeb.Router do
 
   alias HackerNewsAggregatorWeb.Controller
 
+  plug(:fetch_query_params)
   plug(:match)
   plug(:dispatch)
 

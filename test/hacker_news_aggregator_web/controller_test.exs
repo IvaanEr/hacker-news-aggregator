@@ -27,7 +27,7 @@ defmodule HackerNewsAggregatorWeb.ControllerTest do
     end
 
     test "get stories paginated", %{conn: conn} do
-      conn = Map.put(conn, :query_params, %{"page_number" => "2", "page_size" => "5"})
+      conn = Map.put(conn, :params, %{"page_number" => "2", "page_size" => "5"})
       assert %Plug.Conn{resp_body: body, status: 200} = Controller.get_stories(conn)
 
       assert %{"page_number" => 2, "page_size" => 5} = Jason.decode!(body)

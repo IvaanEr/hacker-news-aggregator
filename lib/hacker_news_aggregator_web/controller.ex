@@ -15,8 +15,8 @@ defmodule HackerNewsAggregatorWeb.Controller do
     - page_number: 1
   """
   @spec get_stories(%Plug.Conn{}) :: %Plug.Conn{}
-  def get_stories(conn) do
-    config = build_pagination_config(conn.query_params)
+  def get_stories(%Plug.Conn{params: params} = conn) do
+    config = build_pagination_config(params)
 
     page =
       State.get_top_stories()
