@@ -1,21 +1,12 @@
 # HackerNewsAggregator
 
-**TODO: Add description**
+Elixir aggregator for Hacker News top stories using GenServer as state and
+supporting REST APIs and websockets to retrieve top stories
+
+> Websockets integrations thanks to: https://medium.com/@loganbbres/elixir-websocket-chat-example-c72986ab5778
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `hacker_news_aggregator` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:hacker_news_aggregator, "~> 0.1.0"}
-  ]
-end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/hacker_news_aggregator](https://hexdocs.pm/hacker_news_aggregator).
-
+mix deps.get
+mix run
+```
