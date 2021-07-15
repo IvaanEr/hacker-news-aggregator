@@ -37,13 +37,13 @@ saved in the state
 ## Examples
 
 ```
-# Fetch `max_amount` of top stories from the state with default pagination
+# Fetch top stories from the state with default pagination
 # (page_size: 10, page_number: 1)
   curl 'http://localhost:4001/top_stories'
 ```
 
 ```
-# Fetch `max_amount` of top stories from the state with custom pagination
+# Fetch top stories from the state with custom pagination
   curl 'http://localhost:4001/top_stories?page_number=2&page_size=5'
 ```
 
