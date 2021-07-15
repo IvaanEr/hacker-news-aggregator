@@ -33,21 +33,24 @@ defmodule HackerNewsAggregatorWeb.Controller do
   Get a single story by ID from the State.
   """
   @spec get_story(%Plug.Conn{}) :: %Plug.Conn{}
-  def get_story(conn) do
-    case Map.get(conn.query_params, "id", nil) do
-      nil ->
+  def get_story(%Plug.Conn{params: params} = conn) do
+    with {:ok, id} <- Map.fetch(params, "id"),
+         {:ok, story} <- id |> State.get_top_story() do
+      conn
+      |> put_resp_content_type("application/json")
+      |> send_resp(200, Jason.encode!(story))
+    else
+      :error ->
         conn
         |> send_resp(400, "provide story id as query param")
 
-      id ->
-        story =
-          id
-          |> State.get_top_story()
-          |> Jason.encode!()
-
+      {:error, :notfound} ->
         conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(200, story)
+        |> send_resp(404, "Not found")
+
+      {:error, reason} ->
+        conn
+        |> send_resp(400, reason)
     end
   end
 

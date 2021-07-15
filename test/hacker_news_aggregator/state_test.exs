@@ -42,13 +42,15 @@ defmodule HackerNewsAggregator.StateTest do
     top_story = %{"id" => 123}
     state = %TopStories{top_stories: [top_story]}
 
-    assert {:reply, ^top_story, ^state} = State.handle_call({:get_top_story, 123}, self(), state)
+    assert {:reply, {:ok, ^top_story}, ^state} =
+             State.handle_call({:get_top_story, 123}, self(), state)
   end
 
   test "get top story from HackerNews" do
     top_story = %{"id" => 123}
     state = %TopStories{}
 
-    assert {:reply, ^top_story, ^state} = State.handle_call({:get_top_story, 123}, self(), state)
+    assert {:reply, {:ok, ^top_story}, ^state} =
+             State.handle_call({:get_top_story, 123}, self(), state)
   end
 end

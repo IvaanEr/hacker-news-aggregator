@@ -6,6 +6,7 @@ defmodule HackerNewsAggregator.State do
   - API to get the top stories stored
   - API to get a single story store or fetch it from HackerNews if it isn't present
     in the state
+  - Send top stories to every websocket connection
   """
   use GenServer, start: {__MODULE__, :start_link, []}
 
@@ -49,12 +50,22 @@ defmodule HackerNewsAggregator.State do
   def handle_call({:get_top_story, id}, _from, %TopStories{top_stories: top_stories} = state) do
     case Enum.find(top_stories, fn story -> story["id"] == id end) do
       nil ->
-        # TODO: Handle errors
-        {:ok, story} = API.get_item(API.new(), id)
-        {:reply, story, state}
+        case API.get_item(API.new(), id) do
+          {:ok, nil} ->
+            {:reply, {:error, :notfound}, state}
+
+          {:ok, story} ->
+            {:reply, {:ok, story}, state}
+
+          {:error, _, _, response} ->
+            {:reply, {:error, response}, state}
+
+          {:error, _, reason} ->
+            {:reply, {:error, reason}, state}
+        end
 
       story ->
-        {:reply, story, state}
+        {:reply, {:ok, story}, state}
     end
   end
 
