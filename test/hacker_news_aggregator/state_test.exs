@@ -3,20 +3,16 @@ defmodule HackerNewsAggregator.StateTest do
   alias HackerNewsAggregator.State
   alias HackerNewsAggregator.TopStories
 
-  import ExUnit.CaptureLog
-
   test "start_link/1" do
     pid = start_supervised!(State, start: {State, :start_link, [:state_test]})
     assert ^pid = Process.whereis(:state_test)
   end
 
   test "GenServer start fetching stories" do
-    assert capture_log(fn ->
-             start_supervised!(State, start: {State, :start_link, [:state_test]})
-             :timer.sleep(500)
+    start_supervised!(State, start: {State, :start_link, [:state_test]})
+    :timer.sleep(500)
 
-             assert :state_test |> State.get_top_stories() |> length() == 3
-           end) =~ "Fetching top stories"
+    assert :state_test |> State.get_top_stories() |> length() == 3
   end
 
   test "fetch top stories from HackerNews" do

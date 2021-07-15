@@ -1,6 +1,6 @@
 use Mix.Config
 
-# config :logger, level: :info
+config :logger, level: :none
 
 config :hacker_news_aggregator, HackerNews.API,
   client_module: HackerNews.Stub,
